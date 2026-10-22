@@ -1,0 +1,24 @@
+{
+  "name": "Kalkulačka dovolené",
+  "short_name": "Dovolená",
+  "description": "Výpočet nároku na dovolenou i pro zkrácené úvazky podle české legislativy (Zákoník práce)",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"]
+}

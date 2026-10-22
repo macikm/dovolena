@@ -1,0 +1,26 @@
+services:
+  dovolena:
+    build: .
+    image: dovolena:latest
+    container_name: dovolena
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Prague
+      - NODE_ENV=production
+    networks:
+      - infrastructure_default
+    ports:
+      - "8094:80"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "app=dovolena"
+      - "maintainer=macikm"
+
+networks:
+  infrastructure_default:
+    external: true
