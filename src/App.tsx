@@ -157,6 +157,15 @@ export const App: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <a
+              href="https://buymeacoffee.com/martinmacko"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors"
+            >
+              <span>🍕</span>
+              <span>Kup mi pizzu</span>
+            </a>
+            <a
               href="https://github.com/macikm/dovolena"
               target="_blank"
               rel="noopener noreferrer"

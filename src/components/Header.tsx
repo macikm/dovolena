@@ -34,9 +34,16 @@ export const Header: React.FC<HeaderProps> = ({
                 ZP ČR
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block truncate">
-              Výpočet nároku i pro zkrácené úvazky od roku 2021
-            </p>
+            <a
+              href="https://buymeacoffee.com/martinmacko"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors mt-0.5"
+              title="Podpořit tvůrce - Kup mi pizzu na buymeacoffee.com"
+            >
+              <span>🍕</span>
+              <span>Kup mi pizzu</span>
+            </a>
           </div>
         </div>
 
