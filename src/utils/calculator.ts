@@ -13,10 +13,10 @@ export const CZECH_MONTHS_SHORT = [
 ];
 
 /**
- * Standardní pracovní fond v hodinách pro dané měsíce pro 40h úvazek (orientační fond běžného roku bez svátků v sobotu/neděli)
+ * Standardní roční fond pracovní doby včetně svátků dle § 348 ZP (260 pracovních dnů = 52 týdnů × 40 h = 2080 h)
  */
 export const STANDARD_MONTH_HOURS_40H = [
-  176, 160, 168, 168, 168, 168, 184, 168, 168, 176, 168, 168
+  176, 160, 176, 168, 176, 168, 184, 176, 168, 184, 168, 176
 ];
 
 /**

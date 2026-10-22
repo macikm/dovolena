@@ -104,12 +104,12 @@ export const App: React.FC = () => {
         onInstallApp={handleInstallApp}
       />
 
-      {/* Hlavní obsah - optimalizovaný pro zobrazení na výšku (mobily) i na šířku */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Horní hrdinský výsledek */}
+      {/* Hlavní obsah - kompaktní zobrazení pro mobil i desktop */}
+      <main className="flex-1 max-w-3xl w-full mx-auto px-3.5 sm:px-5 py-3.5 sm:py-5 space-y-3.5 sm:space-y-4">
+        {/* Výsledek */}
         <ResultSummary result={calculationResult} />
 
-        {/* Vizuální ukazatel 52 týdnů */}
+        {/* Ukazatel 52 týdnů */}
         <WeeksProgressBar result={calculationResult} />
 
         {/* Parametry smlouvy a úvazku */}
@@ -118,7 +118,7 @@ export const App: React.FC = () => {
           onChange={handleStateChange}
         />
 
-        {/* Odpracovaná doba (měsíce nebo roční suma) */}
+        {/* Odpracovaná doba */}
         <WorkedHoursInput
           state={vacationState}
           onChange={handleStateChange}

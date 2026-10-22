@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Calendar, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { VacationCalculationResult } from '../types/vacation';
 import { formatCzechNumber } from '../utils/calculator';
 
@@ -11,104 +11,75 @@ export const ResultSummary: React.FC<ResultSummaryProps> = ({ result }) => {
   const averageDayLength = result.userTPD / 5;
 
   return (
-    <div className="space-y-4">
-      {/* Hlavní výsledková karta */}
-      <div className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl shadow-teal-950/20 border border-teal-800/40 relative overflow-hidden">
-        {/* Dekorativní gradientní kruh na pozadí */}
-        <div className="absolute -right-16 -top-16 w-56 h-56 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-teal-800/40">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-teal-300">
+          Nárok na dovolenou
+        </span>
 
-        <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-            <span className="text-xs uppercase tracking-wider font-semibold text-teal-300 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4" />
-              Výsledný zákonný nárok na dovolenou
+        {result.qualifies ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Podmínka splněna
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            Méně než 4 týdny
+          </span>
+        )}
+      </div>
+
+      {result.qualifies ? (
+        <div className="space-y-3">
+          {/* Hlavní čísla */}
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="text-4xl sm:text-5xl font-extrabold tracking-tight">
+              {formatCzechNumber(result.roundedEntitlementHours)}
             </span>
-
-            {result.qualifies ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 self-start sm:self-auto">
-                <CheckCircle className="w-3.5 h-3.5" />
-                Zákonná podmínka splněna
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 self-start sm:self-auto">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Podmínka nesplněna (&lt; 4 týdny)
-              </span>
-            )}
+            <span className="text-lg sm:text-xl font-medium text-teal-200">
+              hodin
+            </span>
+            <span className="text-slate-400 text-sm">
+              ({formatCzechNumber(result.entitlementDays, 1)} dnů / {formatCzechNumber(result.entitlementWeeks, 2)} týdnů)
+            </span>
           </div>
 
-          {result.qualifies ? (
-            <div>
-              {/* Hlavní číslo: HODINY */}
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                  {formatCzechNumber(result.roundedEntitlementHours)}
-                </span>
-                <span className="text-xl sm:text-2xl font-semibold text-teal-200">
-                  hodin dovolené
-                </span>
+          {/* Doplňkové rychlé karty */}
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-teal-800/40 text-xs">
+            <div className="bg-white/5 rounded-xl p-2.5">
+              <div className="text-teal-300 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5" /> Dny dovolené
               </div>
-
-              {/* Informace o zaokrouhlení nahoru */}
-              <div className="mt-1 text-xs text-teal-300/90 flex items-center gap-2 flex-wrap">
-                <span>
-                  § 216 odst. 5 ZP: zaokrouhleno na celé hodiny nahoru
-                </span>
-                {result.exactEntitlementHours !== result.roundedEntitlementHours && (
-                  <span className="opacity-80">
-                    (přesný matematický výpočet: {formatCzechNumber(result.exactEntitlementHours, 2)} h)
-                  </span>
-                )}
+              <div className="text-lg font-bold text-white mt-0.5">
+                {formatCzechNumber(result.entitlementDays, 1)} dnů
               </div>
-
-              {/* Vedlejší metriky: Dny a Týdny */}
-              <div className="mt-6 pt-5 border-t border-teal-800/50 grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="bg-white/5 backdrop-blur-xs rounded-2xl p-3 sm:p-4 border border-white/10">
-                  <div className="flex items-center gap-1.5 text-xs text-teal-200 mb-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    Přepočet na dny
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-bold text-white">
-                    {formatCzechNumber(result.entitlementDays, 1)}{' '}
-                    <span className="text-sm font-normal text-teal-200">dnů</span>
-                  </div>
-                  <div className="text-[11px] text-teal-300/70 mt-0.5">
-                    při průměrné směně {formatCzechNumber(averageDayLength, 1)} h/den
-                  </div>
-                </div>
-
-                <div className="bg-white/5 backdrop-blur-xs rounded-2xl p-3 sm:p-4 border border-white/10">
-                  <div className="flex items-center gap-1.5 text-xs text-teal-200 mb-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    Přepočet na týdny
-                  </div>
-                  <div className="text-2xl sm:text-3xl font-bold text-white">
-                    {formatCzechNumber(result.entitlementWeeks, 2)}{' '}
-                    <span className="text-sm font-normal text-teal-200">týdnů</span>
-                  </div>
-                  <div className="text-[11px] text-teal-300/70 mt-0.5">
-                    při úvazku {result.userTPD} h/týden
-                  </div>
-                </div>
+              <div className="text-[11px] text-slate-400">
+                směna {formatCzechNumber(averageDayLength, 1)} h
               </div>
             </div>
-          ) : (
-            /* Upozornění, když neodpracoval 4 týdny */
-            <div className="py-2">
-              <div className="text-3xl sm:text-4xl font-extrabold text-amber-200 mb-2">
-                0 hodin nároku
+
+            <div className="bg-white/5 rounded-xl p-2.5">
+              <div className="text-teal-300 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" /> Týdny dovolené
               </div>
-              <p className="text-sm text-slate-300 leading-relaxed max-w-xl">
-                Podle <strong>§ 213 odst. 3 Zákoníku práce</strong> vzniká právo na poměrnou část dovolené pouze zaměstnanci, který za kalendářní rok odpracoval <strong>alespoň 4násobek své týdenní pracovní doby</strong> (4 celé týdny = {4 * result.userTPD} hodin).
-              </p>
-              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-200 text-xs font-medium border border-amber-500/30">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                Aktuálně máte odpracováno {formatCzechNumber(result.totalWorkedHours)} h ({formatCzechNumber(result.workedWeeksExact, 1)} týdnů). Do splnění podmínky zbývá {result.minWeeksRequired - result.workedFullWeeks} týdny ({Math.max(0, (result.minWeeksRequired * result.userTPD) - result.totalWorkedHours)} hodin).
+              <div className="text-lg font-bold text-white mt-0.5">
+                {formatCzechNumber(result.entitlementWeeks, 2)} týdnů
+              </div>
+              <div className="text-[11px] text-slate-400">
+                úvazek {result.userTPD} h/týden
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="py-1">
+          <div className="text-3xl font-bold text-amber-300">0 hodin nároku</div>
+          <p className="text-xs text-slate-300 mt-1">
+            Dle § 213 odst. 3 ZP je nutné odpracovat alespoň 4 celé týdny ({4 * result.userTPD} h). Odpracováno {formatCzechNumber(result.totalWorkedHours)} h ({formatCzechNumber(result.workedWeeksExact, 1)} týdnů).
+          </p>
+        </div>
+      )}
     </div>
   );
 };

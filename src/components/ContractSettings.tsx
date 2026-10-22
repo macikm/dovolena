@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Briefcase, Calendar, Sparkles } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 import { VacationInputState } from '../types/vacation';
 import { formatCzechNumber } from '../utils/calculator';
 
@@ -9,22 +9,17 @@ interface ContractSettingsProps {
 }
 
 export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onChange }) => {
-  // Lokální stav pro režim zadávání výměry: 'weeks' nebo 'hours'
   const [entitlementUnit, setEntitlementUnit] = useState<'weeks' | 'hours'>('weeks');
-  
-  // Pomocný stav pro hodnotu v hodinách, když uživatel edituje hodiny
   const currentCalculatedHours = state.standardTPD * state.standardVacationWeeks;
   const currentCalculatedDays = currentCalculatedHours / (state.standardTPD / 5);
 
   const handleWeeksChange = (weeks: number) => {
-    const safeWeeks = Math.max(0, weeks);
-    onChange({ standardVacationWeeks: safeWeeks });
+    onChange({ standardVacationWeeks: Math.max(0, weeks) });
   };
 
   const handleHoursChange = (hours: number) => {
     const safeHours = Math.max(0, hours);
     const standardTPD = state.standardTPD || 40;
-    // Přepočet hodin zpátky na týdny
     const weeks = standardTPD > 0 ? safeHours / standardTPD : 0;
     onChange({ standardVacationWeeks: Number(weeks.toFixed(4)) });
   };
@@ -33,7 +28,6 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
     const safeTPD = Math.max(1, tpd);
     onChange({
       standardTPD: safeTPD,
-      // Pokud má plný úvazek, aktualizujeme i userTPD
       ...(state.isFullTime ? { userTPD: safeTPD } : {}),
     });
   };
@@ -46,54 +40,40 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/90 dark:border-slate-800 transition-colors">
-      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
-        <Briefcase className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-        <h2 className="font-semibold text-slate-900 dark:text-white text-base sm:text-lg">
-          Parametry úvazku a dovolené
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-xs border border-slate-200 dark:border-slate-800 transition-colors">
+      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <Briefcase className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+        <h2 className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+          Úvazek a standardní nárok
         </h2>
       </div>
 
-      <div className="space-y-5">
-        {/* 1. Standardní stanovená týdenní pracovní doba (TPD) */}
+      <div className="space-y-3.5">
+        {/* Standardní úvazek */}
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              Standardní týdenní úvazek u zaměstnavatele
-            </label>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Obvykle 40 h (§ 79 ZP)
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[140px]">
-              <input
-                type="number"
-                step="0.25"
-                min="1"
-                max="80"
-                value={state.standardTPD}
-                onChange={(e) => handleStandardTPDChange(parseFloat(e.target.value) || 0)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-                placeholder="40"
-              />
-              <span className="absolute right-3 top-2 text-xs text-slate-400 dark:text-slate-500 pointer-events-none">
-                hod/týden
-              </span>
-            </div>
-
-            {/* Rychlé předvolby standardních úvazků dle ZP */}
+          <label className="text-xs font-medium text-slate-700 dark:text-slate-300 block mb-1">
+            Standardní úvazek firmy (hod/týden)
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              step="0.25"
+              min="1"
+              max="80"
+              value={state.standardTPD}
+              onChange={(e) => handleStandardTPDChange(parseFloat(e.target.value) || 0)}
+              className="w-24 px-3 py-1.5 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
+            />
             <div className="flex items-center gap-1">
               {[40, 38.75, 37.5].map((preset) => (
                 <button
                   key={preset}
                   type="button"
                   onClick={() => handleStandardTPDChange(preset)}
-                  className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                  className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors ${
                     state.standardTPD === preset
-                      ? 'bg-teal-50 border-teal-500 text-teal-700 dark:bg-teal-950/60 dark:border-teal-500 dark:text-teal-300 shadow-sm'
-                      : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      ? 'bg-teal-50 border-teal-500 text-teal-700 dark:bg-teal-950 dark:border-teal-500 dark:text-teal-300'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {preset} h
@@ -103,21 +83,20 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
           </div>
         </div>
 
-        {/* 2. Standardní nárok na dovolenou (v týdnech nebo v hodinách s obousměrným přepočtem) */}
+        {/* Standardní výměra dovolené */}
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              Standardní roční výměra dovolené
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
+              Výměra dovolené
             </label>
-            {/* Přepínač zadání v týdnech vs v hodinách */}
-            <div className="inline-flex rounded-lg p-0.5 bg-slate-100 dark:bg-slate-800 self-start sm:self-auto">
+            <div className="inline-flex rounded-lg p-0.5 bg-slate-100 dark:bg-slate-800 text-[11px]">
               <button
                 type="button"
                 onClick={() => setEntitlementUnit('weeks')}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                className={`px-2 py-0.5 rounded-md font-medium transition-all ${
                   entitlementUnit === 'weeks'
-                    ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-300 shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white dark:bg-slate-700 text-teal-700 dark:text-teal-300 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 V týdnech
@@ -125,10 +104,10 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
               <button
                 type="button"
                 onClick={() => setEntitlementUnit('hours')}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                className={`px-2 py-0.5 rounded-md font-medium transition-all ${
                   entitlementUnit === 'hours'
-                    ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-300 shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white dark:bg-slate-700 text-teal-700 dark:text-teal-300 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 V hodinách
@@ -136,25 +115,21 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             {entitlementUnit === 'weeks' ? (
-              <div className="relative flex-1 min-w-[140px]">
+              <div className="relative">
                 <input
                   type="number"
-                  step="0.1"
+                  step="0.5"
                   min="1"
                   max="20"
                   value={state.standardVacationWeeks}
                   onChange={(e) => handleWeeksChange(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-                  placeholder="4"
+                  className="w-24 px-3 py-1.5 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
                 />
-                <span className="absolute right-3 top-2 text-xs text-slate-400 dark:text-slate-500 pointer-events-none">
-                  týdny
-                </span>
               </div>
             ) : (
-              <div className="relative flex-1 min-w-[140px]">
+              <div className="relative">
                 <input
                   type="number"
                   step="1"
@@ -162,16 +137,11 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
                   max="800"
                   value={currentCalculatedHours}
                   onChange={(e) => handleHoursChange(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-                  placeholder="160"
+                  className="w-24 px-3 py-1.5 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
                 />
-                <span className="absolute right-3 top-2 text-xs text-slate-400 dark:text-slate-500 pointer-events-none">
-                  hodin
-                </span>
               </div>
             )}
 
-            {/* Rychlá tlačítka pro standardní výměry */}
             <div className="flex items-center gap-1">
               {[
                 { label: '4 týdny (min)', weeks: 4 },
@@ -182,12 +152,11 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
                   key={item.weeks}
                   type="button"
                   onClick={() => handleWeeksChange(item.weeks)}
-                  className={`px-2 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                  className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors ${
                     state.standardVacationWeeks === item.weeks
-                      ? 'bg-teal-50 border-teal-500 text-teal-700 dark:bg-teal-950/60 dark:border-teal-500 dark:text-teal-300 shadow-sm'
-                      : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      ? 'bg-teal-50 border-teal-500 text-teal-700 dark:bg-teal-950 dark:border-teal-500 dark:text-teal-300'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
-                  title={`${item.weeks} týdny = ${item.weeks * state.standardTPD} hodin`}
                 >
                   {item.label}
                 </button>
@@ -195,106 +164,70 @@ export const ContractSettings: React.FC<ContractSettingsProps> = ({ state, onCha
             </div>
           </div>
 
-          {/* Obousměrný přepočet badge */}
-          <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-lg p-2 flex items-center justify-between flex-wrap gap-1.5">
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-teal-500" />
-              <span>Přepočet plného ročního nároku:</span>
-            </span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {formatCzechNumber(state.standardVacationWeeks)} týdnů = {formatCzechNumber(currentCalculatedHours)} hodin ({formatCzechNumber(currentCalculatedDays)} dnů)
-            </span>
+          <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+            = {formatCzechNumber(state.standardVacationWeeks)} týdnů = {formatCzechNumber(currentCalculatedHours)} h ({formatCzechNumber(currentCalculatedDays)} dnů)
           </div>
         </div>
 
-        {/* 3. Váš sjednaný úvazek (plný vs zkrácený) */}
+        {/* Váš úvazek */}
         <div>
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-1.5">
+          <label className="text-xs font-medium text-slate-700 dark:text-slate-300 block mb-1">
             Váš pracovní úvazek
           </label>
-
-          <div className="grid grid-cols-2 gap-2 mb-2">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => handleFullTimeToggle(true)}
-              className={`p-3 rounded-xl border text-left transition-all ${
+              className={`flex-1 py-1.5 px-3 rounded-xl border text-xs font-semibold transition-all ${
                 state.isFullTime
-                  ? 'border-teal-500 bg-teal-50/70 dark:bg-teal-950/40 text-teal-900 dark:text-teal-100 shadow-xs'
-                  : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                  ? 'border-teal-500 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200'
+                  : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
-              <div className="text-xs font-semibold">Plný úvazek</div>
-              <div className="text-sm font-bold mt-0.5">{state.standardTPD} h / týden</div>
+              Plný ({state.standardTPD} h/týden)
             </button>
-
             <button
               type="button"
               onClick={() => handleFullTimeToggle(false)}
-              className={`p-3 rounded-xl border text-left transition-all ${
+              className={`flex-1 py-1.5 px-3 rounded-xl border text-xs font-semibold transition-all ${
                 !state.isFullTime
-                  ? 'border-teal-500 bg-teal-50/70 dark:bg-teal-950/40 text-teal-900 dark:text-teal-100 shadow-xs'
-                  : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                  ? 'border-teal-500 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200'
+                  : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
-              <div className="text-xs font-semibold">Zkrácený / Vlastní</div>
-              <div className="text-sm font-bold mt-0.5">
-                {!state.isFullTime ? `${state.userTPD} h / týden` : 'Nastavit hodiny...'}
-              </div>
+              Zkrácený {!state.isFullTime && `(${state.userTPD} h)`}
             </button>
           </div>
 
-          {/* Vstup pro zkrácený úvazek */}
           {!state.isFullTime && (
-            <div className="mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                  Zadejte konkrétní týdenní úvazek (hodiny/týden):
-                </span>
-                <div className="flex items-center gap-1">
-                  {[20, 30, 10].map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => onChange({ userTPD: preset })}
-                      className={`px-2 py-0.5 text-xs font-medium rounded border transition-colors ${
-                        state.userTPD === preset
-                          ? 'bg-teal-600 text-white border-teal-600'
-                          : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {preset} h
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="number"
-                  step="0.5"
-                  min="1"
-                  max={state.standardTPD}
-                  value={state.userTPD}
-                  onChange={(e) => onChange({ userTPD: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  placeholder="20"
-                />
-                <span className="absolute right-3 top-2 text-xs text-slate-400 dark:text-slate-500 pointer-events-none">
-                  hodin / týden
-                </span>
-              </div>
-
-              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                <span>
-                  Poměr k plnému úvazku:{' '}
-                  <strong>{formatCzechNumber((state.userTPD / state.standardTPD) * 100, 1)} %</strong>
-                  {' • '}
-                  Plný roční nárok při odpracování roku:{' '}
-                  <strong>{formatCzechNumber(state.userTPD * state.standardVacationWeeks)} hodin</strong>
-                  {' '}
-                  ({formatCzechNumber((state.userTPD * state.standardVacationWeeks) / (state.userTPD / 5))} dnů po {formatCzechNumber(state.userTPD / 5, 1)} h)
-                </span>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="number"
+                step="0.5"
+                min="1"
+                max={state.standardTPD}
+                value={state.userTPD}
+                onChange={(e) => onChange({ userTPD: parseFloat(e.target.value) || 0 })}
+                className="w-24 px-3 py-1.5 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                hod/týden ({formatCzechNumber((state.userTPD / state.standardTPD) * 100, 0)} % úvazek)
+              </span>
+              <div className="flex items-center gap-1 ml-auto">
+                {[20, 30].map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={() => onChange({ userTPD: h })}
+                    className={`px-2 py-0.5 text-xs rounded border ${
+                      state.userTPD === h
+                        ? 'bg-teal-600 text-white border-teal-600'
+                        : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    {h} h
+                  </button>
+                ))}
               </div>
             </div>
           )}
