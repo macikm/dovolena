@@ -38,10 +38,10 @@ export const Header: React.FC<HeaderProps> = ({
               href="https://buymeacoffee.com/martinmacko"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors mt-0.5"
+              className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors mt-0.5"
               title="Podpořit tvůrce - Kup mi pizzu na buymeacoffee.com"
             >
-              <span>🍕</span>
+              <span className="text-[13px] opacity-80">🍕</span>
               <span>Kup mi pizzu</span>
             </a>
           </div>

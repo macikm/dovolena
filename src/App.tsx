@@ -160,9 +160,9 @@ export const App: React.FC = () => {
               href="https://buymeacoffee.com/martinmacko"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline transition-colors"
+              className="inline-flex items-center gap-1 text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400 transition-colors"
             >
-              <span>🍕</span>
+              <span className="text-[13px] opacity-80">🍕</span>
               <span>Kup mi pizzu</span>
             </a>
             <a
