@@ -1,5 +1,5 @@
 import React from 'react';
-import { Palmtree, Sun, Moon, Download, HelpCircle, ShieldCheck } from 'lucide-react';
+import { Sun, Moon, Download, HelpCircle, ShieldCheck } from 'lucide-react';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -21,9 +21,11 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-4xl mx-auto px-4 py-3 sm:py-3.5 flex items-center justify-between gap-2">
         {/* Logo and title */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-teal-500/20 shrink-0">
-            <Palmtree className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
+          <img
+            src="/icon.svg"
+            alt="Kalkulačka dovolené"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shadow-md shadow-teal-900/20 shrink-0 object-contain"
+          />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">

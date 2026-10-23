@@ -1,11 +1,16 @@
 // Service Worker pro aplikaci Kalkulačka dovolené
-const CACHE_NAME = 'dovolena-cache-v1';
+const CACHE_NAME = 'dovolena-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
   '/favicon.svg',
-  '/icon.svg'
+  '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
+  '/favicon-32.png',
+  '/favicon-16.png'
 ];
 
 self.addEventListener('install', (event) => {
