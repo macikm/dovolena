@@ -1,22 +1,24 @@
+export type WorkPresetType = 'full-year' | 'half-year' | 'quarter-year' | null;
+
 export interface VacationInputState {
-  // Standardní podmínky u zaměstnavatele
-  standardTPD: number; // např. 40, 38.75, 37.5
-  standardVacationWeeks: number; // např. 4, 5, 8
+  // Úvazek zaměstnance (hodin/týden) - např. 40, 38.75, 37.5, 30, 20...
+  userTPD: number;
   
-  // Úvazek zaměstnance
-  isFullTime: boolean;
-  userTPD: number; // hodiny/týden zaměstnance (např. 20 pro poloviční, 40 pro plný)
+  // Výměra dovolené u zaměstnavatele v týdnech - např. 4, 5, 8
+  standardVacationWeeks: number;
   
   // Způsob zadávání odpracovaných hodin
   inputMode: 'monthly' | 'annual';
   monthlyHours: number[]; // 12 hodnot pro leden - prosinec
   annualTotal: number; // přímá suma odpracovaných hodin
+  
+  // Příznak aktivní rychlé předvolby (celý rok, půlrok...)
+  activePreset?: WorkPresetType;
 }
 
 export interface VacationCalculationResult {
   totalWorkedHours: number;
   userTPD: number;
-  standardTPD: number;
   standardVacationWeeks: number;
   fullYearEntitlementHours: number; // Roční nárok při plném odpracování (userTPD * standardVacationWeeks)
   fullYearEntitlementDays: number;

@@ -7,33 +7,39 @@ import { ResultSummary } from './components/ResultSummary';
 import { CalculationDetails } from './components/CalculationDetails';
 import { LegalModal } from './components/LegalModal';
 import { VacationInputState } from './types/vacation';
-import { calculateVacation, STANDARD_MONTH_HOURS_40H } from './utils/calculator';
+import { calculateVacation, generateHoursForPreset } from './utils/calculator';
 import { Globe, Smartphone, GitBranch } from 'lucide-react';
 
 export const App: React.FC = () => {
-  // Inicializace stavu kalkulačky s výchozími hodnotami (např. 6 měsíců práce pro názornou demonstraci)
+  // Inicializace stavu kalkulačky s výchozími hodnotami (plný rok pro 40h úvazek)
   const [vacationState, setVacationState] = useState<VacationInputState>(() => {
-    // Pro prvotní otevření načteme buď uložený stav z localStorage, nebo rozumný výchozí stav
     const saved = localStorage.getItem('dovolena_input_state');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.userTPD === 'number') {
+          return {
+            userTPD: parsed.userTPD || 40,
+            standardVacationWeeks: parsed.standardVacationWeeks || 4,
+            inputMode: parsed.inputMode || 'monthly',
+            monthlyHours: Array.isArray(parsed.monthlyHours) ? parsed.monthlyHours : generateHoursForPreset('full-year', parsed.userTPD || 40).monthly,
+            annualTotal: parsed.annualTotal ?? generateHoursForPreset('full-year', parsed.userTPD || 40).total,
+            activePreset: parsed.activePreset ?? 'full-year',
+          };
+        }
       } catch (e) {
         // Fallback
       }
     }
-    // Výchozí stav: 40h standard, 4 týdny dovolené, plný úvazek, vyplněno prvních 6 měsíců (půl roku)
-    const initialMonths = STANDARD_MONTH_HOURS_40H.map((h, i) => (i < 6 ? h : 0));
-    const initialTotal = initialMonths.reduce((a, b) => a + b, 0);
 
+    const { monthly, total } = generateHoursForPreset('full-year', 40);
     return {
-      standardTPD: 40,
-      standardVacationWeeks: 4,
-      isFullTime: true,
       userTPD: 40,
+      standardVacationWeeks: 4,
       inputMode: 'monthly',
-      monthlyHours: initialMonths,
-      annualTotal: initialTotal,
+      monthlyHours: monthly,
+      annualTotal: total,
+      activePreset: 'full-year',
     };
   });
 
@@ -90,7 +96,19 @@ export const App: React.FC = () => {
   const calculationResult = calculateVacation(vacationState);
 
   const handleStateChange = (updates: Partial<VacationInputState>) => {
-    setVacationState((prev) => ({ ...prev, ...updates }));
+    setVacationState((prev) => {
+      const next = { ...prev, ...updates };
+
+      // Při změně úvazku (userTPD): pokud je aktivní předvolba (celý rok, půlrok, 3 měsíce),
+      // automaticky přepočítáme odpracované hodiny na nový úvazek
+      if (updates.userTPD !== undefined && updates.userTPD !== prev.userTPD && prev.activePreset) {
+        const { monthly, total } = generateHoursForPreset(prev.activePreset, updates.userTPD);
+        next.monthlyHours = monthly;
+        next.annualTotal = total;
+      }
+
+      return next;
+    });
   };
 
   return (
@@ -106,19 +124,16 @@ export const App: React.FC = () => {
 
       {/* Hlavní obsah - kompaktní zobrazení pro mobil i desktop */}
       <main className="flex-1 max-w-3xl w-full mx-auto px-3.5 sm:px-5 py-3.5 sm:py-5 space-y-3.5 sm:space-y-4">
-        {/* Výsledek */}
+        {/* 1. Výsledek - 3 samostatné karty (hodiny, dny, týdny) */}
         <ResultSummary result={calculationResult} />
 
-        {/* Ukazatel 52 týdnů */}
-        <WeeksProgressBar result={calculationResult} />
-
-        {/* Parametry smlouvy a úvazku */}
+        {/* 2. Parametry smlouvy a úvazku */}
         <ContractSettings
           state={vacationState}
           onChange={handleStateChange}
         />
 
-        {/* Odpracovaná doba */}
+        {/* 3. Odpracovaná doba */}
         <WorkedHoursInput
           state={vacationState}
           onChange={handleStateChange}
@@ -126,7 +141,10 @@ export const App: React.FC = () => {
           calculatedFullWeeks={calculationResult.workedFullWeeks}
         />
 
-        {/* Detailní rozpis výpočtu (rozbalovací) */}
+        {/* 4. Ukazatel 52 týdnů (umístěn přímo pod odpracovanou dobou) */}
+        <WeeksProgressBar result={calculationResult} />
+
+        {/* 5. Detailní rozpis výpočtu (rozbalovací) */}
         <CalculationDetails result={calculationResult} />
       </main>
 
